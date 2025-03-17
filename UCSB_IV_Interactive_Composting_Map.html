@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_1ef87ecea3879f308e2c95ff3acb5145 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/leaflet.markercluster.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.1.0/MarkerCluster.Default.css"/>
+</head>
+<body>
+    
+    
+<script>
+  setTimeout(function() {
+    window.foliumMap = map_1ef87ecea3879f308e2c95ff3acb5145;
+    console.log("foliumMap assigned dynamically:", window.foliumMap);
+  }, 500);
+</script>
+    
+<style>
+  #loginButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  #loginModal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+  }
+  #loginModalContent {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 300px;
+    border-radius: 10px;
+  }
+  #userInfo {
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    z-index: 1000;
+    background: white;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    display: none;
+    font-family: Arial;
+  }
+</style>
+
+<button id="loginButton" onclick="openLoginModal()">Login</button>
+
+<div id="loginModal">
+  <div id="loginModalContent">
+    <span onclick="closeLoginModal()" style="float:right;cursor:pointer;">&times;</span>
+    <h3>Login</h3>
+    <input id="usernameInput" type="text" placeholder="Username" style="width:100%;padding:5px;margin:5px 0;">
+    <input id="passwordInput" type="password" placeholder="Password" style="width:100%;padding:5px;margin:5px 0;">
+    <button onclick="login()" style="width:100%;padding:5px;margin:5px 0;">Submit</button>
+  </div>
+</div>
+
+<div id="userInfo">
+  <span id="welcomeMessage"></span><br>
+  Total Points: <span id="totalPoints">0</span><br>
+  <button onclick="earnPoints()" style="padding:5px;margin-top:5px;">Earn Points</button>
+</div>
+
+<script>
+  var userData = {"alice": {"password": "pass123", "points": {"Methodist Garden compost bin": 1253, "St. Michael's Garden compost bin": 847, "Between Lot 22 and the SRB": 763, "Inside the UCen next to the bookstore": 687, "Old Library entrance facing Gervitz Hall": 579, "Outside main Library entrance facing Girvetz Hall": 1496, "Next to the Arbor outside Gervitz Hall": 548, "Outside Summit Cafe": 653, "Outside Coral Tree Cafe": 824, "Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart": 1212, "Back entrance of the library facing science buildings": 1141, "Near the elevator at Bren Hall": 570, "Inside Courtyard Cafe near Ellings Hall": 907, "At Isla Vista Food Co-Op": 661}}, "bob": {"password": "secure456", "points": {"Methodist Garden compost bin": 640, "St. Michael's Garden compost bin": 576, "Between Lot 22 and the SRB": 1321, "Inside the UCen next to the bookstore": 1379, "Old Library entrance facing Gervitz Hall": 1142, "Outside main Library entrance facing Girvetz Hall": 741, "Next to the Arbor outside Gervitz Hall": 1005, "Outside Summit Cafe": 955, "Outside Coral Tree Cafe": 870, "Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart": 626, "Back entrance of the library facing science buildings": 932, "Near the elevator at Bren Hall": 506, "Inside Courtyard Cafe near Ellings Hall": 1327, "At Isla Vista Food Co-Op": 814}}, "charlie": {"password": "mypassword", "points": {"Methodist Garden compost bin": 861, "St. Michael's Garden compost bin": 930, "Between Lot 22 and the SRB": 854, "Inside the UCen next to the bookstore": 638, "Old Library entrance facing Gervitz Hall": 1207, "Outside main Library entrance facing Girvetz Hall": 787, "Next to the Arbor outside Gervitz Hall": 1323, "Outside Summit Cafe": 1468, "Outside Coral Tree Cafe": 1039, "Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart": 957, "Back entrance of the library facing science buildings": 1075, "Near the elevator at Bren Hall": 968, "Inside Courtyard Cafe near Ellings Hall": 1032, "At Isla Vista Food Co-Op": 994}}, "david": {"password": "test789", "points": {"Methodist Garden compost bin": 1259, "St. Michael's Garden compost bin": 1235, "Between Lot 22 and the SRB": 779, "Inside the UCen next to the bookstore": 1031, "Old Library entrance facing Gervitz Hall": 606, "Outside main Library entrance facing Girvetz Hall": 543, "Next to the Arbor outside Gervitz Hall": 985, "Outside Summit Cafe": 948, "Outside Coral Tree Cafe": 1399, "Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart": 1421, "Back entrance of the library facing science buildings": 638, "Near the elevator at Bren Hall": 1049, "Inside Courtyard Cafe near Ellings Hall": 1328, "At Isla Vista Food Co-Op": 1346}}, "emma": {"password": "hello321", "points": {"Methodist Garden compost bin": 1079, "St. Michael's Garden compost bin": 964, "Between Lot 22 and the SRB": 829, "Inside the UCen next to the bookstore": 1206, "Old Library entrance facing Gervitz Hall": 1226, "Outside main Library entrance facing Girvetz Hall": 814, "Next to the Arbor outside Gervitz Hall": 985, "Outside Summit Cafe": 998, "Outside Coral Tree Cafe": 1284, "Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart": 987, "Back entrance of the library facing science buildings": 1075, "Near the elevator at Bren Hall": 1266, "Inside Courtyard Cafe near Ellings Hall": 1403, "At Isla Vista Food Co-Op": 1230}}, "frank": {"password": "goodluck007", "points": {"Methodist Garden compost bin": 1347, "St. Michael's Garden compost bin": 529, "Between Lot 22 and the SRB": 1407, "Inside the UCen next to the bookstore": 552, "Old Library entrance facing Gervitz Hall": 978, "Outside main Library entrance facing Girvetz Hall": 794, "Next to the Arbor outside Gervitz Hall": 1292, "Outside Summit Cafe": 1039, "Outside Coral Tree Cafe": 1140, "Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart": 1114, "Back entrance of the library facing science buildings": 574, "Near the elevator at Bren Hall": 851, "Inside Courtyard Cafe near Ellings Hall": 1383, "At Isla Vista Food Co-Op": 1324}}, "grace": {"password": "sunshine999", "points": {"Methodist Garden compost bin": 1263, "St. Michael's Garden compost bin": 770, "Between Lot 22 and the SRB": 747, "Inside the UCen next to the bookstore": 1003, "Old Library entrance facing Gervitz Hall": 1123, "Outside main Library entrance facing Girvetz Hall": 1118, "Next to the Arbor outside Gervitz Hall": 1297, "Outside Summit Cafe": 1144, "Outside Coral Tree Cafe": 854, "Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart": 924, "Back entrance of the library facing science buildings": 1016, "Near the elevator at Bren Hall": 550, "Inside Courtyard Cafe near Ellings Hall": 1097, "At Isla Vista Food Co-Op": 590}}, "henry": {"password": "abc123", "points": {"Methodist Garden compost bin": 885, "St. Michael's Garden compost bin": 1314, "Between Lot 22 and the SRB": 910, "Inside the UCen next to the bookstore": 978, "Old Library entrance facing Gervitz Hall": 1265, "Outside main Library entrance facing Girvetz Hall": 772, "Next to the Arbor outside Gervitz Hall": 540, "Outside Summit Cafe": 792, "Outside Coral Tree Cafe": 714, "Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart": 657, "Back entrance of the library facing science buildings": 1282, "Near the elevator at Bren Hall": 1117, "Inside Courtyard Cafe near Ellings Hall": 881, "At Isla Vista Food Co-Op": 603}}, "isabel": {"password": "password", "points": {"Methodist Garden compost bin": 1319, "St. Michael's Garden compost bin": 845, "Between Lot 22 and the SRB": 1306, "Inside the UCen next to the bookstore": 785, "Old Library entrance facing Gervitz Hall": 1083, "Outside main Library entrance facing Girvetz Hall": 1228, "Next to the Arbor outside Gervitz Hall": 1341, "Outside Summit Cafe": 759, "Outside Coral Tree Cafe": 1446, "Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart": 1490, "Back entrance of the library facing science buildings": 772, "Near the elevator at Bren Hall": 989, "Inside Courtyard Cafe near Ellings Hall": 784, "At Isla Vista Food Co-Op": 786}}, "jack": {"password": "letmein", "points": {"Methodist Garden compost bin": 525, "St. Michael's Garden compost bin": 1271, "Between Lot 22 and the SRB": 853, "Inside the UCen next to the bookstore": 585, "Old Library entrance facing Gervitz Hall": 1022, "Outside main Library entrance facing Girvetz Hall": 1202, "Next to the Arbor outside Gervitz Hall": 798, "Outside Summit Cafe": 800, "Outside Coral Tree Cafe": 701, "Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart": 1095, "Back entrance of the library facing science buildings": 990, "Near the elevator at Bren Hall": 699, "Inside Courtyard Cafe near Ellings Hall": 1042, "At Isla Vista Food Co-Op": 1102}}};
+  var currentUser = null;
+  var currentPopupBin = null; // will hold the bin name from the open popup
+
+  function openLoginModal() {
+    console.log("openLoginModal() called.");
+    document.getElementById('loginModal').style.display = 'block';
+  }
+
+  function closeLoginModal() {
+    console.log("closeLoginModal() called.");
+    document.getElementById('loginModal').style.display = 'none';
+  }
+
+  function login() {
+    console.log("login() called.");
+    var username = document.getElementById('usernameInput').value;
+    var password = document.getElementById('passwordInput').value;
+    console.log("Attempting login with username =", username, "password =", password);
+    if (userData[username] && userData[username].password === password) {
+      currentUser = username;
+      console.log("Login successful. currentUser =", currentUser);
+      document.getElementById('welcomeMessage').innerHTML = 'Welcome, ' + username + '!';
+      updateUserPanel();
+      updateMarkerPopups();
+      document.getElementById('userInfo').style.display = 'block';
+      closeLoginModal();
+      alert('Login successful!');
+    } else {
+      console.log("Invalid credentials for username =", username);
+      alert('Invalid credentials. Please try again.');
+    }
+  }
+
+  function silentReLogin() {
+    console.log("silentReLogin() called. currentUser =", currentUser);
+    if (currentUser) {
+      updateUserPanel();
+      updateMarkerPopups();
+    }
+  }
+
+  function updateUserPanel() {
+    console.log("updateUserPanel() called. currentUser =", currentUser);
+    if (!currentUser) return;
+    var total = 0;
+    for (var binName in userData[currentUser].points) {
+      total += userData[currentUser].points[binName];
+    }
+    console.log("Total points calculated =", total);
+    document.getElementById('totalPoints').innerHTML = total;
+  }
+
+  function updateMarkerPopups() {
+    console.log("updateMarkerPopups() called. currentUser =", currentUser);
+    if (!currentUser) return;
+    var pointsEls = document.getElementsByClassName('user-points');
+    var rankEls = document.getElementsByClassName('user-rank');
+    var scoreboardEls = document.getElementsByClassName('scoreboard');
+
+    for (var i = 0; i < pointsEls.length; i++) {
+      var binName = pointsEls[i].getAttribute('data-bin');
+      var userPoints = userData[currentUser].points[binName];
+      pointsEls[i].innerHTML = userPoints + ' pts';
+      console.log("Updated user-points for bin =", binName, "to", userPoints);
+
+      var rankings = [];
+      for (var user in userData) {
+        rankings.push({ name: user, points: userData[user].points[binName] });
+      }
+      rankings.sort(function(a, b) { return b.points - a.points; });
+      var rank = rankings.findIndex(function(u) { return u.name === currentUser; }) + 1;
+      rankEls[i].innerHTML = 'Rank ' + rank;
+      console.log("Updated user-rank for bin =", binName, "rank =", rank);
+    }
+
+    for (var i = 0; i < scoreboardEls.length; i++) {
+      var binName = scoreboardEls[i].getAttribute('data-bin');
+      var rankings = [];
+      for (var user in userData) {
+        rankings.push({ name: user, points: userData[user].points[binName] });
+      }
+      rankings.sort(function(a, b) { return b.points - a.points; });
+      var scoreboardStr = '';
+      for (var j = 0; j < Math.min(3, rankings.length); j++) {
+        scoreboardStr += (j+1) + '. ' + rankings[j].name + ': ' + rankings[j].points + ' pts';
+        if (j < Math.min(3, rankings.length) - 1) {
+          scoreboardStr += '<br>';
+        }
+      }
+      scoreboardEls[i].innerHTML = scoreboardStr;
+      console.log("Updated scoreboard for bin =", binName, "top3 =", scoreboardStr);
+    }
+  }
+
+  function earnPoints() {
+    console.log("earnPoints() called. currentUser =", currentUser, "currentPopupBin =", currentPopupBin);
+    if (!currentUser) {
+      alert("Please log in first.");
+      return;
+    }
+    if (!currentPopupBin) {
+      alert("Please open the popup of a specific trash can.");
+      return;
+    }
+    userData[currentUser].points[currentPopupBin] += 50;
+    console.log("Added 50 points to bin =", currentPopupBin, "for user =", currentUser);
+    updateUserPanel();
+    updateMarkerPopups();
+    alert("You earned 50 points for " + currentPopupBin + "!");
+  }
+
+  // Attach event listeners after ensuring foliumMap is available
+  setTimeout(function() {
+    var foliumMap = window.foliumMap;
+    console.log("Attaching event listeners. foliumMap object:", foliumMap);
+    if (foliumMap) {
+      foliumMap.on('popupopen', function(e) {
+        console.log("'popupopen' event triggered.");
+        var popupEl = e.popup.getElement();
+        if (popupEl) {
+          console.log("Popup HTML:", popupEl.innerHTML);
+          var pointsEls = popupEl.getElementsByClassName('user-points');
+          if (pointsEls.length > 0) {
+            var binName = pointsEls[0].getAttribute('data-bin');
+            currentPopupBin = binName;
+            console.log("currentPopupBin set to:", currentPopupBin);
+          } else {
+            console.log("No element with class 'user-points' found in popup.");
+          }
+        } else {
+          console.log("Popup element is not available.");
+        }
+        if (currentUser) {
+          console.log("User is logged in, calling silentReLogin() after 50ms");
+          setTimeout(function() {
+            silentReLogin();
+          }, 50);
+        }
+      });
+
+      foliumMap.on('popupclose', function(e) {
+        console.log("'popupclose' event triggered. Resetting currentPopupBin to null.");
+        currentPopupBin = null;
+      });
+    } else {
+      console.log("foliumMap object still undefined. Event listeners not attached.");
+    }
+  }, 1000);
+</script>
+    
+            <div class="folium-map" id="map_1ef87ecea3879f308e2c95ff3acb5145" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_1ef87ecea3879f308e2c95ff3acb5145 = L.map(
+                "map_1ef87ecea3879f308e2c95ff3acb5145",
+                {
+                    center: [34.4138, -119.847],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 15,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_3810a6655655d657b239b3ef4dc2fb5c = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_3810a6655655d657b239b3ef4dc2fb5c.addTo(map_1ef87ecea3879f308e2c95ff3acb5145);
+        
+    
+            var marker_cluster_66a7022f3d8911d64c51aa6c852de86e = L.markerClusterGroup(
+                {
+}
+            );
+        
+    
+            var marker_0115ae4b65c923214385d814f43eb2fd = L.marker(
+                [34.4129746, -119.8624767],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_6225dcdb31ded9049835e8390333e90f = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a4d4934971bd692e5863161342e7a003 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_73a83106b803c11ee4e6f50b25e01fea = $(`<div id="html_73a83106b803c11ee4e6f50b25e01fea" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">Methodist Garden compost bin</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 50% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 50%; background-color: orange; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="Methodist Garden compost bin">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="Methodist Garden compost bin">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="Methodist Garden compost bin">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_a4d4934971bd692e5863161342e7a003.setContent(html_73a83106b803c11ee4e6f50b25e01fea);
+            
+        
+
+        marker_0115ae4b65c923214385d814f43eb2fd.bindPopup(popup_a4d4934971bd692e5863161342e7a003)
+        ;
+
+        
+    
+    
+                marker_0115ae4b65c923214385d814f43eb2fd.setIcon(icon_6225dcdb31ded9049835e8390333e90f);
+            
+    
+            var marker_67b02659b80f36f82728df4a39a41232 = L.marker(
+                [34.41546, -119.8585439],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_78ed84a748fdb705bb655d9f0d9934ab = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_9bda17451157ce8a89fdcd6ea09389e8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_727490cd72b4fedfc001da08cfd6b967 = $(`<div id="html_727490cd72b4fedfc001da08cfd6b967" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">St. Michael's Garden compost bin</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 75% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 75%; background-color: red; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="St. Michael's Garden compost bin">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="St. Michael's Garden compost bin">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="St. Michael's Garden compost bin">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_9bda17451157ce8a89fdcd6ea09389e8.setContent(html_727490cd72b4fedfc001da08cfd6b967);
+            
+        
+
+        marker_67b02659b80f36f82728df4a39a41232.bindPopup(popup_9bda17451157ce8a89fdcd6ea09389e8)
+        ;
+
+        
+    
+    
+                marker_67b02659b80f36f82728df4a39a41232.setIcon(icon_78ed84a748fdb705bb655d9f0d9934ab);
+            
+    
+            var marker_77ebb8e272eecf6ede6697c1360736e1 = L.marker(
+                [34.4132158, -119.8523077],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_6e40d6465fe99de71a45a3fae669f6c3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_bddcb8e7ace7a051a271df5da53397ce = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_de51460fbcf4d3bd8c4be2f092fa2899 = $(`<div id="html_de51460fbcf4d3bd8c4be2f092fa2899" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">Between Lot 22 and the SRB</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 40% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 40%; background-color: orange; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="Between Lot 22 and the SRB">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="Between Lot 22 and the SRB">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="Between Lot 22 and the SRB">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_bddcb8e7ace7a051a271df5da53397ce.setContent(html_de51460fbcf4d3bd8c4be2f092fa2899);
+            
+        
+
+        marker_77ebb8e272eecf6ede6697c1360736e1.bindPopup(popup_bddcb8e7ace7a051a271df5da53397ce)
+        ;
+
+        
+    
+    
+                marker_77ebb8e272eecf6ede6697c1360736e1.setIcon(icon_6e40d6465fe99de71a45a3fae669f6c3);
+            
+    
+            var marker_e9a47bbdfe8a7b6bab159216dc4fc311 = L.marker(
+                [34.4117821, -119.8484514],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_de03166af0d3270bef3f5f13f70b2c8d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0387a711ec47c57a7eb6a34d701bd8bf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_43daa98777288cb7c924b1cd622da156 = $(`<div id="html_43daa98777288cb7c924b1cd622da156" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">Inside the UCen next to the bookstore</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 80% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 80%; background-color: red; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="Inside the UCen next to the bookstore">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="Inside the UCen next to the bookstore">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="Inside the UCen next to the bookstore">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_0387a711ec47c57a7eb6a34d701bd8bf.setContent(html_43daa98777288cb7c924b1cd622da156);
+            
+        
+
+        marker_e9a47bbdfe8a7b6bab159216dc4fc311.bindPopup(popup_0387a711ec47c57a7eb6a34d701bd8bf)
+        ;
+
+        
+    
+    
+                marker_e9a47bbdfe8a7b6bab159216dc4fc311.setIcon(icon_de03166af0d3270bef3f5f13f70b2c8d);
+            
+    
+            var marker_1e579849165b0ec1c91cec633c0234fa = L.marker(
+                [34.4132974, -119.8459063],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_b1f3b7a810d850e106334d6c481fc7fa = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5325d772c2d86b90fc43b6865cd31d66 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_dbf62e39d914ba59b0b72758b872fe65 = $(`<div id="html_dbf62e39d914ba59b0b72758b872fe65" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">Old Library entrance facing Gervitz Hall</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 60% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 60%; background-color: orange; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="Old Library entrance facing Gervitz Hall">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="Old Library entrance facing Gervitz Hall">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="Old Library entrance facing Gervitz Hall">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_5325d772c2d86b90fc43b6865cd31d66.setContent(html_dbf62e39d914ba59b0b72758b872fe65);
+            
+        
+
+        marker_1e579849165b0ec1c91cec633c0234fa.bindPopup(popup_5325d772c2d86b90fc43b6865cd31d66)
+        ;
+
+        
+    
+    
+                marker_1e579849165b0ec1c91cec633c0234fa.setIcon(icon_b1f3b7a810d850e106334d6c481fc7fa);
+            
+    
+            var marker_6451e805fda037be71aadcab7d466407 = L.marker(
+                [34.4135668, -119.8459241],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_0e5ac09db2bfbd349fd1780d30343708 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_5e689020bfa3a3dd287b4737b5f2cae8 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e1f39ecc840b85e3abfb0b88a25edf58 = $(`<div id="html_e1f39ecc840b85e3abfb0b88a25edf58" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">Outside main Library entrance facing Girvetz Hall</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 30% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 30%; background-color: green; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="Outside main Library entrance facing Girvetz Hall">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="Outside main Library entrance facing Girvetz Hall">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="Outside main Library entrance facing Girvetz Hall">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_5e689020bfa3a3dd287b4737b5f2cae8.setContent(html_e1f39ecc840b85e3abfb0b88a25edf58);
+            
+        
+
+        marker_6451e805fda037be71aadcab7d466407.bindPopup(popup_5e689020bfa3a3dd287b4737b5f2cae8)
+        ;
+
+        
+    
+    
+                marker_6451e805fda037be71aadcab7d466407.setIcon(icon_0e5ac09db2bfbd349fd1780d30343708);
+            
+    
+            var marker_4c4f7d6b8225aec5713212fc0d85efdc = L.marker(
+                [34.4138884, -119.8463847],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_9af88e946a4942e2e95686a13e93f0c5 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_8131c64f6e656a68b9323f8faf6a267d = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a72ee6b3a35febc3456b7e16c5e39951 = $(`<div id="html_a72ee6b3a35febc3456b7e16c5e39951" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">Next to the Arbor outside Gervitz Hall</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 55% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 55%; background-color: orange; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="Next to the Arbor outside Gervitz Hall">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="Next to the Arbor outside Gervitz Hall">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="Next to the Arbor outside Gervitz Hall">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_8131c64f6e656a68b9323f8faf6a267d.setContent(html_a72ee6b3a35febc3456b7e16c5e39951);
+            
+        
+
+        marker_4c4f7d6b8225aec5713212fc0d85efdc.bindPopup(popup_8131c64f6e656a68b9323f8faf6a267d)
+        ;
+
+        
+    
+    
+                marker_4c4f7d6b8225aec5713212fc0d85efdc.setIcon(icon_9af88e946a4942e2e95686a13e93f0c5);
+            
+    
+            var marker_fa02a9f05af290cc69bf07e6c6ecfef0 = L.marker(
+                [34.4144422, -119.8459241],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_a86e08015493dfcb7f79fc8f55551dc6 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_aade9692cba39bd7b9da3ed63e0997bf = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_e479aae8c2551429a27b6b5f14f2eaa0 = $(`<div id="html_e479aae8c2551429a27b6b5f14f2eaa0" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">Outside Summit Cafe</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 70% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 70%; background-color: red; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="Outside Summit Cafe">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="Outside Summit Cafe">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="Outside Summit Cafe">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_aade9692cba39bd7b9da3ed63e0997bf.setContent(html_e479aae8c2551429a27b6b5f14f2eaa0);
+            
+        
+
+        marker_fa02a9f05af290cc69bf07e6c6ecfef0.bindPopup(popup_aade9692cba39bd7b9da3ed63e0997bf)
+        ;
+
+        
+    
+    
+                marker_fa02a9f05af290cc69bf07e6c6ecfef0.setIcon(icon_a86e08015493dfcb7f79fc8f55551dc6);
+            
+    
+            var marker_a873bb683c0951c89a3abe9fafb8c601 = L.marker(
+                [34.4158395, -119.8466325],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_e95ba72fe433d974d564dec8223d0e0d = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_ca149047f526383e75c86ed21ba9684c = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_c293a047976a2912aa406eab4cc7b446 = $(`<div id="html_c293a047976a2912aa406eab4cc7b446" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">Outside Coral Tree Cafe</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 60% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 60%; background-color: orange; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="Outside Coral Tree Cafe">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="Outside Coral Tree Cafe">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="Outside Coral Tree Cafe">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_ca149047f526383e75c86ed21ba9684c.setContent(html_c293a047976a2912aa406eab4cc7b446);
+            
+        
+
+        marker_a873bb683c0951c89a3abe9fafb8c601.bindPopup(popup_ca149047f526383e75c86ed21ba9684c)
+        ;
+
+        
+    
+    
+                marker_a873bb683c0951c89a3abe9fafb8c601.setIcon(icon_e95ba72fe433d974d564dec8223d0e0d);
+            
+    
+            var marker_3548f5c8f16761a56b3980ac6446e466 = L.marker(
+                [34.4157068, -119.8448844],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_73d500858d1c97f9cdd2dd4f5343f380 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_39ee20a4b8ecba9e99299d9f1498d606 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_1c91ecb487f8ee1bc9cbee68579a282f = $(`<div id="html_1c91ecb487f8ee1bc9cbee68579a282f" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 85% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 85%; background-color: red; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="Courtyard between Buchanan Hall and Ellison Hall near the Buchanan Coffee Cart">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_39ee20a4b8ecba9e99299d9f1498d606.setContent(html_1c91ecb487f8ee1bc9cbee68579a282f);
+            
+        
+
+        marker_3548f5c8f16761a56b3980ac6446e466.bindPopup(popup_39ee20a4b8ecba9e99299d9f1498d606)
+        ;
+
+        
+    
+    
+                marker_3548f5c8f16761a56b3980ac6446e466.setIcon(icon_73d500858d1c97f9cdd2dd4f5343f380);
+            
+    
+            var marker_c0b7243befb0cc1228723b0157a5e547 = L.marker(
+                [34.4138566, -119.8450054],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_1a6ba05c3055ef14d6e0e7275151ee01 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_190403b3a99fd3ee4fd0c8c6a432c182 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_6185548304d4abc3ff6e734ca2aa8400 = $(`<div id="html_6185548304d4abc3ff6e734ca2aa8400" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">Back entrance of the library facing science buildings</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 45% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 45%; background-color: orange; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="Back entrance of the library facing science buildings">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="Back entrance of the library facing science buildings">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="Back entrance of the library facing science buildings">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_190403b3a99fd3ee4fd0c8c6a432c182.setContent(html_6185548304d4abc3ff6e734ca2aa8400);
+            
+        
+
+        marker_c0b7243befb0cc1228723b0157a5e547.bindPopup(popup_190403b3a99fd3ee4fd0c8c6a432c182)
+        ;
+
+        
+    
+    
+                marker_c0b7243befb0cc1228723b0157a5e547.setIcon(icon_1a6ba05c3055ef14d6e0e7275151ee01);
+            
+    
+            var marker_56299898413479c46c532b52e37b236a = L.marker(
+                [34.4129015, -119.8421096],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_b90394007ec7f93958e0753a87f133b3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_46334bcc0be47b8ebc83c24a04216998 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_ce8d527f59aa47c5aab96642f822fe3e = $(`<div id="html_ce8d527f59aa47c5aab96642f822fe3e" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">Near the elevator at Bren Hall</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 90% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 90%; background-color: red; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="Near the elevator at Bren Hall">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="Near the elevator at Bren Hall">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="Near the elevator at Bren Hall">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_46334bcc0be47b8ebc83c24a04216998.setContent(html_ce8d527f59aa47c5aab96642f822fe3e);
+            
+        
+
+        marker_56299898413479c46c532b52e37b236a.bindPopup(popup_46334bcc0be47b8ebc83c24a04216998)
+        ;
+
+        
+    
+    
+                marker_56299898413479c46c532b52e37b236a.setIcon(icon_b90394007ec7f93958e0753a87f133b3);
+            
+    
+            var marker_9f02e990ce1ae028b866812932cee8c4 = L.marker(
+                [34.4148944, -119.840673],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_d5ef6958ec07ea2f21799c4df5c20024 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_4877e7bfb72127d633bf604c7f4e52c6 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a91954f5f8134a41c97f1fb1c4095cee = $(`<div id="html_a91954f5f8134a41c97f1fb1c4095cee" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">Inside Courtyard Cafe near Ellings Hall</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 25% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 25%; background-color: green; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="Inside Courtyard Cafe near Ellings Hall">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="Inside Courtyard Cafe near Ellings Hall">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="Inside Courtyard Cafe near Ellings Hall">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_4877e7bfb72127d633bf604c7f4e52c6.setContent(html_a91954f5f8134a41c97f1fb1c4095cee);
+            
+        
+
+        marker_9f02e990ce1ae028b866812932cee8c4.bindPopup(popup_4877e7bfb72127d633bf604c7f4e52c6)
+        ;
+
+        
+    
+    
+                marker_9f02e990ce1ae028b866812932cee8c4.setIcon(icon_d5ef6958ec07ea2f21799c4df5c20024);
+            
+    
+            var marker_ef7e845df8a1067e5713d5b29cd1e573 = L.marker(
+                [34.411651, -119.8577154],
+                {
+}
+            ).addTo(marker_cluster_66a7022f3d8911d64c51aa6c852de86e);
+        
+    
+            var icon_565fc404a10733bb03d9b840ae71acea = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "green",
+  "iconColor": "white",
+  "icon": "leaf",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_cebda59468c685a1ee67eb171b13ee06 = L.popup({
+  "maxWidth": 300,
+});
+
+        
+            
+                var html_a0cc5f243f8d827f6572ffc527cc8596 = $(`<div id="html_a0cc5f243f8d827f6572ffc527cc8596" style="width: 100.0%; height: 100.0%;">     <div style="width: 300px; font-family: Arial; padding: 10px; background-color: #f7f7f7; border-radius: 10px;">         <h4 style="margin:0; text-align: center; color: #333;">At Isla Vista Food Co-Op</h4>         <p style="margin: 5px 0;"><b>Bin Capacity:</b> 65% full</p>         <div style="width: 100%; background-color: #ddd; border-radius: 5px;">             <div style="width: 65%; background-color: orange; height: 10px; border-radius: 5px;"></div>         </div>         <p style="margin: 5px 0;"><b>Your Points:</b> <span class="user-points" data-bin="At Isla Vista Food Co-Op">Login to view</span></p>         <p style="margin: 5px 0;"><b>Your Rank:</b> <span class="user-rank" data-bin="At Isla Vista Food Co-Op">Login to view</span></p>         <div style="margin: 5px 0;"><b>Scoreboard:</b><br>             <span class="scoreboard" data-bin="At Isla Vista Food Co-Op">Login to view</span>         </div>         <a href="#" style="color: blue; text-decoration: none;"><b>Redeem Points</b></a> |         <a href="#" style="color: red; text-decoration: none;"><b>Report a Problem</b></a>     </div>     </div>`)[0];
+                popup_cebda59468c685a1ee67eb171b13ee06.setContent(html_a0cc5f243f8d827f6572ffc527cc8596);
+            
+        
+
+        marker_ef7e845df8a1067e5713d5b29cd1e573.bindPopup(popup_cebda59468c685a1ee67eb171b13ee06)
+        ;
+
+        
+    
+    
+                marker_ef7e845df8a1067e5713d5b29cd1e573.setIcon(icon_565fc404a10733bb03d9b840ae71acea);
+            
+    
+            marker_cluster_66a7022f3d8911d64c51aa6c852de86e.addTo(map_1ef87ecea3879f308e2c95ff3acb5145);
+        
+</script>
+</html>
